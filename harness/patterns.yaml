@@ -1,0 +1,40 @@
+patterns:
+  pipeline:
+    stages:
+      - product-intent
+      - architecture
+      - implementation
+      - unit-test
+      - review
+  fan_out_fan_in:
+    fan_out:
+      - ui
+      - ink
+      - math
+      - persistence
+      - ci
+    fan_in: supervisor
+  expert_pool:
+    experts:
+      android_compose: app/src/main/java/com/surether/testcodingfield/ui
+      ink_math: app/src/main/java/com/surether/testcodingfield/ink
+      graph_parser: app/src/main/java/com/surether/testcodingfield/math
+      storage: app/src/main/java/com/surether/testcodingfield/data
+  producer_reviewer:
+    producer: android_compose_engineer
+    reviewer: reviewer
+  supervisor:
+    owner: supervisor
+    acceptance:
+      - tablet-first note-taking flow
+      - pen/highlighter/eraser tools
+      - handwritten math candidate to graph
+      - local persistence
+      - repeatable CI build
+  hierarchical:
+    epics:
+      - note_canvas
+      - math_recognition
+      - graphing
+      - persistence
+      - quality
