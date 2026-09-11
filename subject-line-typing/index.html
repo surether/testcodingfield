@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="교과 용어 CSV를 업로드해 노선형 타이핑 게임으로 연습하는 웹앱" />
+  <title>SUBJECT LINE TYPING</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button id="homeBtn" class="brand" type="button" aria-label="홈으로">
+        <span class="brand-mark">SL</span>
+        <span><strong>SUBJECT LINE</strong><small>TYPING GAME</small></span>
+      </button>
+      <nav class="top-actions">
+        <button id="templateBtn" class="ghost-btn" type="button">CSV 양식 다운로드</button>
+        <label class="upload-btn" for="fileInput">교과 데이터 업로드</label>
+        <input id="fileInput" type="file" accept=".csv,.json,text/csv,application/json" hidden />
+      </nav>
+    </header>
+
+    <main>
+      <section id="setupView" class="view active">
+        <div class="hero-grid">
+          <article class="panel intro-panel">
+            <div class="eyebrow">CUSTOM DATA · LINE TYPING</div>
+            <h1>교과 용어를<br><span>노선처럼 타이핑</span></h1>
+            <p>CSV 또는 JSON으로 용어 세트를 올리면 각 단원이 노선이 되고, 용어 하나가 한 정거장이 됩니다.</p>
+            <div class="feature-strip"><span>실시간 타수</span><span>정확도</span><span>오타</span><span>완주 기록</span></div>
+          </article>
+          <article class="panel data-panel">
+            <div class="panel-title-row"><div><div class="eyebrow">DATA SOURCE</div><h2 id="datasetTitle">기본 과학 예시</h2></div><span id="dataCountBadge" class="badge">0 TERMS</span></div>
+            <div id="uploadDrop" class="drop-zone" tabindex="0"><strong>파일을 끌어놓거나 클릭하여 업로드</strong><span>CSV / JSON · UTF-8 권장</span></div>
+            <div class="schema-note">필수 열: <code>line</code>, <code>order</code>, <code>term</code> · 선택 열: <code>subject</code>, <code>hint</code></div>
+          </article>
+        </div>
+        <section class="panel settings-panel">
+          <div class="panel-title-row"><div><div class="eyebrow">GAME SETUP</div><h2>운행 설정</h2></div><button id="resetBtn" class="text-btn" type="button">선택 초기화</button></div>
+          <div class="setup-grid">
+            <div><label class="field-label">노선(단원) 선택</label><div id="lineSelector" class="line-selector"></div></div>
+            <div class="options-column">
+              <div><label class="field-label" for="modeSelect">플레이 모드</label><select id="modeSelect"><option value="copy">타이핑 모드 · 용어 보고 입력</option><option value="recall">암기 모드 · 힌트 보고 용어 입력</option></select></div>
+              <div><label class="field-label" for="directionSelect">진행 방향</label><select id="directionSelect"><option value="forward">정방향</option><option value="reverse">역방향</option><option value="shuffle">무작위</option></select></div>
+              <div><label class="field-label" for="playerName">플레이어</label><input id="playerName" type="text" maxlength="20" placeholder="이름 또는 번호" autocomplete="off" /></div>
+            </div>
+          </div>
+          <button id="startBtn" class="primary-btn" type="button">운행 시작 <span>ENTER</span></button>
+        </section>
+        <section class="panel records-panel">
+          <div class="panel-title-row"><div><div class="eyebrow">LOCAL RECORDS</div><h2>최근 기록</h2></div><button id="clearRecordsBtn" class="text-btn danger" type="button">기록 삭제</button></div>
+          <div id="recordsList" class="records-list"></div>
+        </section>
+      </section>
+
+      <section id="gameView" class="view">
+        <div class="game-header panel">
+          <div><div class="eyebrow" id="gameSubject">SUBJECT</div><h2 id="gameLine">LINE</h2></div>
+          <div class="stats-grid"><div><span>타수</span><strong id="cpmStat">0</strong></div><div><span>정확도</span><strong id="accuracyStat">100%</strong></div><div><span>오타</span><strong id="errorStat">0</strong></div><div><span>시간</span><strong id="timeStat">00:00</strong></div></div>
+          <button id="quitBtn" class="ghost-btn" type="button">운행 종료</button>
+        </div>
+        <div class="game-layout">
+          <aside class="panel route-panel"><div class="route-summary"><span id="progressText">0 / 0</span><strong id="progressPercent">0%</strong></div><div class="progress-track"><div id="progressBar" class="progress-bar"></div></div><div id="routeList" class="route-list"></div></aside>
+          <section class="panel typing-panel">
+            <div class="station-meta"><span id="stationIndex">NEXT 01</span><span id="modeBadge">COPY MODE</span></div>
+            <div class="prompt-wrap"><div id="promptLabel" class="prompt-label">현재 용어</div><div id="promptText" class="prompt-text">용어</div><div id="hintText" class="hint-text"></div></div>
+            <div class="input-wrap"><input id="typingInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="타이핑 입력" /><div id="charFeedback" class="char-feedback" aria-live="polite"></div></div>
+            <div class="typing-help">정확히 입력하면 자동으로 다음 정거장으로 이동합니다. <kbd>ESC</kbd> 일시정지 · <kbd>ENTER</kbd> 재개</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="resultView" class="view">
+        <article class="panel result-panel"><div class="result-badge">ARRIVED</div><div class="eyebrow">LINE COMPLETE</div><h1 id="resultTitle">운행 완료</h1><p id="resultSubtitle"></p><div class="result-stats"><div><span>평균 타수</span><strong id="resultCpm">0</strong><small>CPM</small></div><div><span>정확도</span><strong id="resultAccuracy">100%</strong></div><div><span>총 오타</span><strong id="resultErrors">0</strong></div><div><span>완주 시간</span><strong id="resultTime">00:00</strong></div></div><div class="result-actions"><button id="retryBtn" class="primary-btn" type="button">같은 노선 다시 타기</button><button id="backSetupBtn" class="ghost-btn" type="button">운행 설정으로</button></div></article>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
