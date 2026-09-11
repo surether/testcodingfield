@@ -61,7 +61,15 @@ subject,line,order,term,hint
 
 ## GitHub Pages
 
-정적 웹앱이므로 GitHub Pages로 배포할 수 있습니다. 저장소 workflow의 artifact 경로를 `subject-line-typing-v3`로 지정하십시오.
+정적 웹앱이므로 GitHub Pages로 배포할 수 있습니다. 배포 workflow는 이미 `subject-line-typing-v3` 폴더를 대상으로 설정되어 있습니다.
+
+저장소에서 Pages가 아직 활성화되지 않았다면 한 번만 다음 설정을 적용하십시오.
+
+1. GitHub 저장소 `Settings` → `Pages`
+2. `Build and deployment`의 `Source`를 **GitHub Actions**로 선택
+3. Actions에서 `Deploy Subject Line Typing Classroom v3 to GitHub Pages` workflow를 실행하거나 v3 파일을 다시 커밋
+
+활성화 후 기본 주소는 일반적으로 `https://<사용자명>.github.io/<저장소명>/` 형식입니다.
 
 ## Metrotyping 관련
 
