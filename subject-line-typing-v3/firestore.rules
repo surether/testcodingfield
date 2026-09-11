@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function teacher() {
+      return signedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email in [
+          "teacher@example.com"
+        ];
+    }
+
+    match /datasets/{datasetId} {
+      allow read, create, update, delete: if teacher();
+    }
+
+    match /games/{gameCode} {
+      allow get: if teacher() || (signedIn() && resource.data.active == true);
+      allow list: if teacher();
+      allow create, update, delete: if teacher();
+    }
+
+    match /progress/{progressId} {
+      allow read: if teacher()
+        || (signedIn() && resource.data.studentUid == request.auth.uid);
+
+      allow create: if signedIn()
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.gameCode is string
+        && request.resource.data.studentKey is string
+        && request.resource.data.studentNo is string
+        && request.resource.data.studentName is string
+        && request.resource.data.total is int
+        && request.resource.data.currentIndex is int
+        && request.resource.data.currentIndex >= 0
+        && request.resource.data.currentIndex <= request.resource.data.total
+        && exists(/databases/$(database)/documents/games/$(request.resource.data.gameCode))
+        && get(/databases/$(database)/documents/games/$(request.resource.data.gameCode)).data.active == true;
+
+      allow update: if signedIn()
+        && resource.data.studentUid == request.auth.uid
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.gameCode == resource.data.gameCode
+        && request.resource.data.studentKey == resource.data.studentKey
+        && request.resource.data.studentNo == resource.data.studentNo
+        && request.resource.data.studentName == resource.data.studentName
+        && request.resource.data.total == resource.data.total
+        && request.resource.data.currentIndex is int
+        && request.resource.data.currentIndex >= 0
+        && request.resource.data.currentIndex <= request.resource.data.total;
+
+      allow delete: if teacher();
+    }
+
+    match /results/{resultId} {
+      allow read: if teacher()
+        || (signedIn() && resource.data.studentUid == request.auth.uid);
+
+      allow create: if signedIn()
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.gameCode is string
+        && request.resource.data.studentKey is string
+        && request.resource.data.studentNo is string
+        && request.resource.data.studentName is string
+        && request.resource.data.attemptNo is int
+        && request.resource.data.attemptNo >= 1
+        && request.resource.data.cpm is int
+        && request.resource.data.cpm >= 0
+        && request.resource.data.accuracy is number
+        && request.resource.data.accuracy >= 0
+        && request.resource.data.accuracy <= 100
+        && request.resource.data.errors is int
+        && request.resource.data.errors >= 0
+        && request.resource.data.durationSec is int
+        && request.resource.data.durationSec >= 0
+        && exists(/databases/$(database)/documents/games/$(request.resource.data.gameCode));
+
+      allow update, delete: if teacher();
+    }
+  }
+}
