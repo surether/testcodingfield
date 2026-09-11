@@ -1,11 +1,11 @@
-name: Deploy Subject Line Typing Classroom v2 to GitHub Pages
+name: Deploy Subject Line Typing Classroom v3 to GitHub Pages
 
 on:
   push:
     branches:
       - "첫번째도전"
     paths:
-      - "subject-line-typing-v2/**"
+      - "subject-line-typing-v3/**"
       - ".github/workflows/subject-line-typing-pages.yml"
   workflow_dispatch:
 
@@ -32,7 +32,7 @@ jobs:
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: subject-line-typing-v2
+          path: subject-line-typing-v3
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
